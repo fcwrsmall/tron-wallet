@@ -3,19 +3,17 @@ package tronWallet
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/golang/protobuf/proto"
 	"github.com/ranjbar-dev/tron-wallet/enums"
 	"github.com/ranjbar-dev/tron-wallet/grpcClient"
 	"github.com/ranjbar-dev/tron-wallet/grpcClient/proto/api"
 	"github.com/ranjbar-dev/tron-wallet/grpcClient/proto/core"
 	"github.com/ranjbar-dev/tron-wallet/util"
-	"strings"
-	"sync"
-	"time"
-)
-
-import (
-	"github.com/golang/protobuf/proto"
 )
 
 type Crawler struct {
@@ -35,6 +33,7 @@ type CrawlTransaction struct {
 	ToAddress     string
 	Amount        int64
 	Symbol        string
+	ContractAddress  string
 }
 
 func (c *Crawler) ScanBlocks(count int) ([]CrawlResult, error) {
@@ -169,7 +168,7 @@ func (c *Crawler) extractOurTransactionsFromBlock(block *api.BlockExtention, cur
 
 		if crawlTransaction != nil {
 			for _, ourAddress := range c.Addresses {
-				if ourAddress == crawlTransaction.ToAddress || ourAddress == crawlTransaction.FromAddress {
+				if ourAddress == crawlTransaction.ContractAddress {
 					txs = append(txs, *crawlTransaction)
 				}
 			}
@@ -240,6 +239,7 @@ func (c *Crawler) prepareTrc20Transaction(t *api.TransactionExtention, contract 
 		ToAddress:   toAddress,
 		Amount:      tokenTransferData.Value.Int64(),
 		Symbol:      symbol,
+		ContractAddress: contractAddress,
 	}
 }
 
