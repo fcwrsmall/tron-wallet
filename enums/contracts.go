@@ -1,6 +1,6 @@
 package enums
 
-import "github.com/ranjbar-dev/tron-wallet/util"
+import "github.com/fcwrsmall/tron-wallet/util"
 
 type ContractAddress string
 
