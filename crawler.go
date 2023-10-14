@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/golang/protobuf/proto"
 	"github.com/fcwrsmall/tron-wallet/enums"
 	"github.com/fcwrsmall/tron-wallet/grpcClient"
 	"github.com/fcwrsmall/tron-wallet/grpcClient/proto/api"
 	"github.com/fcwrsmall/tron-wallet/grpcClient/proto/core"
 	"github.com/fcwrsmall/tron-wallet/util"
+	"github.com/golang/protobuf/proto"
 )
 
 type Crawler struct {
@@ -27,13 +27,13 @@ type CrawlResult struct {
 }
 
 type CrawlTransaction struct {
-	TxId          string
-	Confirmations int64
-	FromAddress   string
-	ToAddress     string
-	Amount        int64
-	Symbol        string
-	ContractAddress  string
+	TxId            string
+	Confirmations   int64
+	FromAddress     string
+	ToAddress       string
+	Amount          int64
+	Symbol          string
+	ContractAddress string
 }
 
 func (c *Crawler) ScanBlocks(count int) ([]CrawlResult, error) {
@@ -74,7 +74,7 @@ func (c *Crawler) ScanBlocks(count int) ([]CrawlResult, error) {
 	return c.prepareCrawlResultFromTransactions(allTransactions), nil
 }
 
-func (c *Crawler) ScanBlocksFromTo(from int, to int) ([]CrawlResult, error) {
+func (c *Crawler) ScanBlocksFromTo(from int, to int, apikey string) ([]CrawlResult, error) {
 
 	if to-from < 1 {
 		return nil, errors.New("to number should be more than from number")
@@ -84,7 +84,7 @@ func (c *Crawler) ScanBlocksFromTo(from int, to int) ([]CrawlResult, error) {
 
 	var allTransactions [][]CrawlTransaction
 
-	client, err := grpcClient.GetGrpcClient(c.Node)
+	client, err := grpcClient.GetGrpcClientByApikey(c.Node, apikey)
 	if err != nil {
 		return nil, err
 	}
@@ -234,11 +234,11 @@ func (c *Crawler) prepareTrc20Transaction(t *api.TransactionExtention, contract 
 	symbol, _ := token.GetSymbol(c.Node, fromAddress)
 
 	return &CrawlTransaction{
-		TxId:        hexutil.Encode(t.GetTxid())[2:],
-		FromAddress: fromAddress,
-		ToAddress:   toAddress,
-		Amount:      tokenTransferData.Value.Int64(),
-		Symbol:      symbol,
+		TxId:            hexutil.Encode(t.GetTxid())[2:],
+		FromAddress:     fromAddress,
+		ToAddress:       toAddress,
+		Amount:          tokenTransferData.Value.Int64(),
+		Symbol:          symbol,
 		ContractAddress: contractAddress,
 	}
 }

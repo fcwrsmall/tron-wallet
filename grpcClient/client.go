@@ -3,12 +3,13 @@ package grpcClient
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/fcwrsmall/tron-wallet/enums"
 	"github.com/fcwrsmall/tron-wallet/grpcClient/proto/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"time"
 )
 
 // GrpcClient controller structure
@@ -33,6 +34,18 @@ func GetGrpcClient(node enums.Node) (*GrpcClient, error) {
 	return c, err
 }
 
+func GetGrpcClientByApikey(node enums.Node, apiKey string) (*GrpcClient, error) {
+
+	c := &GrpcClient{
+		Address:     string(node),
+		grpcTimeout: 5 * time.Second,
+		apiKey:      apiKey,
+	}
+
+	err := c.Start(grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	return c, err
+}
 func (g *GrpcClient) Start(opts ...grpc.DialOption) error {
 	var err error
 	if len(g.Address) == 0 {
