@@ -88,16 +88,22 @@ func (c *Crawler) ScanBlocksFromTo(client *grpcClient.GrpcClient, from int, to i
 	var wg sync.WaitGroup
 
 	var allTransactions [][]CrawlTransaction
-
+	var errList []error
 	for i := to; i > from; i-- {
 		// sleep to avoid 503 error
 		wg.Add(1)
 		time.Sleep(100 * time.Millisecond)
-		go c.getBlockData(&wg, client, &allTransactions, int64(i))
+		go func() {
+			err_ := c.getBlockData(&wg, client, &allTransactions, int64(i))
+			errList = append(errList, err_)
+		}()
 	}
-
 	wg.Wait()
-
+	for _,err := range errList{
+		if err != nil{
+			return nil, err
+		}
+	}
 	return c.prepareCrawlResultFromTransactions(allTransactions), nil
 }
 
