@@ -26,7 +26,7 @@ func GetGrpcClient(node enums.Node) (*GrpcClient, error) {
 
 	c := &GrpcClient{
 		Address:     string(node),
-		grpcTimeout: 5 * time.Second,
+		grpcTimeout: 10 * time.Second,
 	}
 
 	err := c.Start(grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -38,7 +38,7 @@ func GetGrpcClientByApikey(node enums.Node, apiKey string) (*GrpcClient, error) 
 
 	c := &GrpcClient{
 		Address:     string(node),
-		grpcTimeout: 5 * time.Second,
+		grpcTimeout: 10 * time.Second,
 		apiKey:      apiKey,
 	}
 
