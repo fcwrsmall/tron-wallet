@@ -71,8 +71,8 @@ func (c *Crawler) ScanBlocks(count int) ([]CrawlResult, error) {
 		}()
 	}
 	wg.Wait()
-	for _,err := range errList{
-		if err != nil{
+	for _, err := range errList {
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -92,15 +92,17 @@ func (c *Crawler) ScanBlocksFromTo(client *grpcClient.GrpcClient, from int, to i
 	for i := to; i > from; i-- {
 		// sleep to avoid 503 error
 		wg.Add(1)
-		time.Sleep(100 * time.Millisecond)
 		go func() {
 			err_ := c.getBlockData(&wg, client, &allTransactions, int64(i))
 			errList = append(errList, err_)
 		}()
+		if i-1 > from {
+			time.Sleep(100 * time.Millisecond)
+		}
 	}
 	wg.Wait()
-	for _,err := range errList{
-		if err != nil{
+	for _, err := range errList {
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -109,7 +111,7 @@ func (c *Crawler) ScanBlocksFromTo(client *grpcClient.GrpcClient, from int, to i
 
 // ==================== private ==================== //
 
-func (c *Crawler) getBlockData(wg *sync.WaitGroup, client *grpcClient.GrpcClient, allTransactions *[][]CrawlTransaction, num int64)error {
+func (c *Crawler) getBlockData(wg *sync.WaitGroup, client *grpcClient.GrpcClient, allTransactions *[][]CrawlTransaction, num int64) error {
 
 	defer wg.Done()
 
