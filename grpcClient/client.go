@@ -22,20 +22,26 @@ type GrpcClient struct {
 	apiKey      string
 }
 
-func GetGrpcClient(node enums.Node) (*GrpcClient, error) {
+var GrpcClientOne *GrpcClient
 
+func GetGrpcClient(node enums.Node) (*GrpcClient, error) {
+	if GrpcClientOne != nil {
+		return GrpcClientOne, nil
+	}
 	c := &GrpcClient{
 		Address:     string(node),
 		grpcTimeout: 5 * time.Second,
 	}
 
 	err := c.Start(grpc.WithTransportCredentials(insecure.NewCredentials()))
-
+	GrpcClientOne = c
 	return c, err
 }
 
 func GetGrpcClientByApikey(node enums.Node, apiKey string) (*GrpcClient, error) {
-
+	if GrpcClientOne != nil {
+		return GrpcClientOne, nil
+	}
 	c := &GrpcClient{
 		Address:     string(node),
 		grpcTimeout: 5 * time.Second,
@@ -43,7 +49,7 @@ func GetGrpcClientByApikey(node enums.Node, apiKey string) (*GrpcClient, error) 
 	}
 
 	err := c.Start(grpc.WithTransportCredentials(insecure.NewCredentials()))
-
+	GrpcClientOne = c
 	return c, err
 }
 
