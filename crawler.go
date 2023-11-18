@@ -96,9 +96,7 @@ func (c *Crawler) ScanBlocksFromTo(client *grpcClient.GrpcClient, from int, to i
 			err_ := c.getBlockData(&wg, client, &allTransactions, int64(i))
 			errList = append(errList, err_)
 		}()
-		if i-1 > from {
-			time.Sleep(100 * time.Millisecond)
-		}
+		time.Sleep(100 * time.Millisecond)
 	}
 	wg.Wait()
 	for _, err := range errList {
