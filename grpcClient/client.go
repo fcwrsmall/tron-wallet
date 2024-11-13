@@ -44,7 +44,7 @@ func GetGrpcClientByApikey(node enums.Node, apiKey string) (*GrpcClient, error) 
 	}
 	c := &GrpcClient{
 		Address:     string(node),
-		grpcTimeout: 5 * time.Second,
+		grpcTimeout: 1 * time.Minute,
 		apiKey:      apiKey,
 	}
 
